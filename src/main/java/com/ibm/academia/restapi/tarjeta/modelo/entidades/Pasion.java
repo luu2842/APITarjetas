@@ -12,16 +12,25 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "pasiones", schema = "preferenciast")
 public class Pasion implements Serializable 
@@ -30,21 +39,31 @@ public class Pasion implements Serializable
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@NotNull(message = "No puede ser nulo")
+	@NotEmpty(message = "No puede estar vacio")
 	@Column(name = "nombre", nullable = false)
 	private String nombre;
 	
+	@Positive(message = "El valor debe de ser mayor a 0")
 	@Column(name = "salario_maximo")
 	private BigDecimal salarioMaximo;
 	
+	@Positive(message = "El valor debe de ser mayor a 0")
 	@Column(name = "salario_minimo", nullable = false)
 	private BigDecimal salarioMinimo;
 	
+	@Positive(message = "El valor debe de ser mayor a 0")
+	@Max(value= 75, message = "No puede ser mayor a 75")
 	@Column(name = "edad_maxima", nullable = false)
 	private Integer edadMaxima;
 	
+	@Positive(message = "El valor debe de ser mayor a 0")
+	@Min(value= 18, message = "No puede ser menor a 18")
 	@Column(name = "edad_minima", nullable = false)
 	private Integer edadMinima;
 	
+	@NotNull(message = "No puede ser nulo")
+	@NotEmpty(message = "No puede estar vacio")
 	@Column(name = "usuario_creacion", nullable = false)
 	private String usuarioCreacion;
 	
@@ -54,10 +73,10 @@ public class Pasion implements Serializable
 	@Column(name = "fecha_modificacion")
 	private Date fechaModificacion;
 	
-	
-	@OneToMany(mappedBy = "pasion", fetch = FetchType.LAZY)
+	@ManyToMany(mappedBy = "pasiones", fetch = FetchType.LAZY)
+	 @JsonIgnoreProperties({"pasiones"})
 	private Set<Tarjeta> tarjetas;
-
+	 
 	public Pasion(Long id, String nombre, BigDecimal salarioMaximo, BigDecimal salarioMinimo, Integer edadMaxima,
 			Integer edadMinima, String usuarioCreacion) {
 		this.id = id;
